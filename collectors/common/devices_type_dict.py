@@ -1,0 +1,1 @@
+CHAR_DEVICE_TYPE = ["Character devices:","Block devices:"]
