@@ -1,5 +1,5 @@
-from common.devices_type_dict import CHAR_DEVICE_TYPE
-from common.utils import read_sysfs
+from .common.devices_type_dict import CHAR_DEVICE_TYPE
+from .common.utils import read_sysfs
 
 
 
