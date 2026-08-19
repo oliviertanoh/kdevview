@@ -36,6 +36,30 @@ reads and displays.
 - **Live (`--watch`)** : stays open and refreshes in place, like `htop`. Exit with `Ctrl+C`.
 - **JSON (`--json`)** : a machine-readable snapshot, for scripting.
 
+## Requirements
+
+- Python 3.8+
+- [`rich`](https://github.com/Textualize/rich) for the terminal rendering
+- Run as **root** for complete results (some sources require it)
+
+## Installation
+
+```
+git clone https://github.com/oliviertanoh/kdevview.git
+cd kdevview
+pip install -r requirements.txt
+```
+
+## Usage
+
+```
+sudo ./kdevview.py                 # full snapshot, rich output
+sudo ./kdevview.py --watch         # live dashboard (summaries)
+sudo ./kdevview.py --only chardev      # snapshot of the chardev section only
+sudo ./kdevview.py --only gpio --watch   # watch GPIO in detail, live
+sudo ./kdevview.py --json          # machine-readable snapshot
+```
+
 ### Options
 
 <!-- Keep this table in sync with the actual argparse definition. -->
