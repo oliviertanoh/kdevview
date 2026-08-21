@@ -59,8 +59,8 @@ class CharacterDevice:
                     if result is not None:
                         block_devices.append(result)
 
-        return {"character_devices": character_devices,
-                "block_devices": block_devices}
+        return {"CHARACTER DEVICES": character_devices,
+                "BLOCK DEVICES": block_devices}
 
     @staticmethod
     def chunk_list(items, n_chunks):
