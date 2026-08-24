@@ -10,16 +10,19 @@ from rich import box
 
 
 class CharacterDevice (Collector):
+    """Collects and displays character and block devices from /proc/devices."""
 
     def __init__(self):
         pass
 
     def parse_device_line(self, line) -> list:
+        """Parse a device line into tokens."""
         parse_line = line.split(" ")
         parse_line = [el for el in parse_line if el != ""]
         return parse_line
 
     def get_device_type(self, line) -> tuple[bool, str | None]:
+        """Identify device type (character or block devices)."""
         data = self.parse_device_line(line)
         if (len(data) > 1):
             type_ = data[0] + " " + data[1]
@@ -29,12 +32,14 @@ class CharacterDevice (Collector):
         return False, None
 
     def get_device_major_name(self, device) -> tuple[str, str] | None:
+        """Extract major number and device name."""
         line = self.parse_device_line(device)
         if (len(line) > 1):
             return (line[0], line[1])
         return None
 
     def collect(self) -> dict:
+        """Collect character and block devices from /proc/devices."""
 
         character_devices = []
         block_devices = []
@@ -66,6 +71,7 @@ class CharacterDevice (Collector):
                 "BLOCK DEVICES": block_devices}
 
     def render_full(self, section, data):
+        """Create a table displaying devices in 3 columns."""
         chunks = chunk_list(data, n_chunks=3)
         table = Table(box=box.SIMPLE_HEAVY, show_header=True)
 

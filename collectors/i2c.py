@@ -9,11 +9,13 @@ import os
 
 
 class I2CDevice (Collector):
+    """Collects and displays I2C devices from /sys/bus/i2c/devices."""
 
     def __init__(self):
         pass
 
     def collect(self) -> dict:
+        """Collect I2C devices and their properties."""
         i2c_devices = []
         list_device_path = "/sys/bus/i2c/devices/"
 
@@ -42,6 +44,7 @@ class I2CDevice (Collector):
         return {"I2C DEVICES": i2c_devices}
 
     def render_full(self, section, data):
+        """Create a table displaying I2C devices in 3 columns."""
         chunks = chunk_list(data, n_chunks=3)
         table = Table(box=box.SIMPLE_HEAVY, show_header=True)
 

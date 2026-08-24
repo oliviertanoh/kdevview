@@ -8,17 +8,20 @@ from rich import box
 
 
 class Modules (Collector):
+    """Collects and displays kernel modules from /proc/modules."""
 
     def __init__(self):
         pass
 
     def parse_device_line(self, line) -> list:
+        """Parse a module line into components."""
         parse_line = line.split(" ")
         parse_line = [el for el in parse_line if el !=
                       "" and el != "-" and el != "Live" and el != "0x0000000000000000"]
         return tuple(parse_line)
 
     def collect(self) -> dict:
+        """Collect kernel modules from /proc/modules."""
         modules = []
 
         modules_loaded = read_sysfs("/proc/modules")
@@ -29,6 +32,7 @@ class Modules (Collector):
         return {"MODULES": modules}
 
     def render_full(self, section, data):
+        """Create a table displaying modules in 3 columns."""
         chunks = chunk_list(data, n_chunks=3)
         table = Table(box=box.SIMPLE_HEAVY, show_header=True)
 
