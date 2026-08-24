@@ -31,21 +31,37 @@ class Modules (Collector):
 
         return {"MODULES": modules}
 
-    def render_full(self, section, data):
-        """Create a table displaying modules in 3 columns."""
-        chunks = chunk_list(data, n_chunks=3)
-        table = Table(box=box.SIMPLE_HEAVY, show_header=True)
-
-        for _ in range(3):
-            table.add_column("Module", style="cyan bold", justify="right")
-            table.add_column("Size", style="white")
+    def render_full(self, data, colone):
+        """Create a table displaying modules in n columns."""
+        if colone == 0:
+            table = Table(box=box.SIMPLE_HEAD, show_header=True)
+            table.add_column("Module", style="cyan bold", justify="right", overflow="fold")
+            table.add_column("Size", style="white", overflow="fold")
             table.add_column("Used", style="white")
-            table.add_column("By", style="white")
+            table.add_column("By", style="white", overflow="fold")
+            for module in data:
+                if len(module) == 3:
+                    table.add_row(module[0], module[1], module[2], "")
+                else:
+                    table.add_row(module[0], module[1], module[2], module[3])
+            return table
+
+        chunks = chunk_list(data, n_chunks=colone)
+        table = Table(box=box.SIMPLE_HEAD, show_header=True)
+
+        for i in range(colone):
+            table.add_column("Module", style="cyan bold",
+                             justify="right", overflow="fold")
+            table.add_column("Size", style="white", overflow="fold")
+            table.add_column("Used", style="white")
+            table.add_column("By", style="white", overflow="fold")
+            if i < colone - 1:
+                table.add_column("", style="on blue")
 
         max_len = max(len(chunk) for chunk in chunks) if chunks else 0
         for row_idx in range(max_len):
             row_data = []
-            for chunk in chunks:
+            for i, chunk in enumerate(chunks):
                 if row_idx < len(chunk):
                     module = chunk[row_idx]
                     if len(module) == 3:
@@ -55,6 +71,8 @@ class Modules (Collector):
                             [module[0], module[1], module[2], module[3]])
                 else:
                     row_data.extend(["", "", "", ""])
+                if i < colone - 1:
+                    row_data.append("")
             table.add_row(*row_data)
 
         return table

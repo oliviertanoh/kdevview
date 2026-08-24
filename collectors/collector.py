@@ -18,10 +18,9 @@ class Collector:
         """Render collected data as a table."""
         ...
 
-    def display_dashboard(self, collector, devices_states, console):
+    def display_dashboard(self, collector, devices_states, console, colone):
         """Display dashboard with collected device data."""
-
         for section, data in devices_states.items():
-            renderable = collector.render_full(section, data)
+            renderable = collector.render_full(data, colone)
             panel = Panel(renderable, title=section, border_style="cyan")
             console.print(panel)

@@ -70,24 +70,36 @@ class CharacterDevice (Collector):
         return {"CHARACTER DEVICES": character_devices,
                 "BLOCK DEVICES": block_devices}
 
-    def render_full(self, section, data):
-        """Create a table displaying devices in 3 columns."""
-        chunks = chunk_list(data, n_chunks=3)
-        table = Table(box=box.SIMPLE_HEAVY, show_header=True)
-
-        for _ in range(3):
+    def render_full(self, data, colone):
+        """Create a table displaying devices in n columns."""
+        if colone == 0:
+            table = Table(box=box.SIMPLE_HEAD, show_header=True)
             table.add_column("Major", justify="right", style="cyan")
             table.add_column("Name")
+            for major, name in data:
+                table.add_row(major, name)
+            return table
+
+        chunks = chunk_list(data, n_chunks=colone)
+        table = Table(box=box.SIMPLE_HEAD, show_header=True)
+
+        for i in range(colone):
+            table.add_column("Major", justify="right", style="cyan")
+            table.add_column("Name")
+            if i < colone - 1:
+                table.add_column("", style="on blue")
 
         max_len = max(len(chunk) for chunk in chunks) if chunks else 0
         for row_idx in range(max_len):
             row_data = []
-            for chunk in chunks:
+            for i, chunk in enumerate(chunks):
                 if row_idx < len(chunk):
                     major, name = chunk[row_idx]
                     row_data.extend([major, name])
                 else:
                     row_data.extend(["", ""])
+                if i < colone - 1:
+                    row_data.append("")
             table.add_row(*row_data)
 
         return table

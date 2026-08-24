@@ -31,10 +31,10 @@ def collect_devices(device: str | None = None) -> dict:
     return result
 
 
-def display_devices(devices_states, console):
+def display_devices(devices_states, console, colone):
     for section, data in devices_states.items():
         collector = DEVICES_COLLECTOR[section]
-        collector.display_dashboard(collector, data, console)
+        collector.display_dashboard(collector, data, console, colone)
 
 
 class KdevviewCommands:
@@ -51,6 +51,9 @@ class KdevviewCommands:
                             help="Desactivate color")
         parser.add_argument("-v", "--version", action="version",
                             version=CURRENT_VERSION, help="Show version")
+
+        parser.add_argument("-c", "--colone", type=int, default=0,
+                            help="Number of columns to display (0=vertical, 1-4 = multi-column)")
 
         exclusive_group = parser.add_mutually_exclusive_group()
         exclusive_group.add_argument(
@@ -76,7 +79,7 @@ class KdevviewCommands:
 
     def run_snapshot(self):
         get_devices_state = collect_devices(self.args.only)
-        display_devices(get_devices_state, console)
+        display_devices(get_devices_state, console, self.args.colone)
 
 
 test = KdevviewCommands()
