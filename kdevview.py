@@ -4,13 +4,15 @@ import json
 from rich.console import Console
 from collectors.chardev import CharacterDevice
 from collectors.modules import Modules
+from collectors.i2c import I2CDevice
 from collectors.common.devices_type_dict import DEVICES, CURRENT_VERSION
 
 console = Console()
 
 DEVICES_COLLECTOR = {
     "chardev": CharacterDevice(),
-    "modules": Modules()
+    "modules": Modules(),
+    "i2c": I2CDevice()
 }
 
 
@@ -32,7 +34,7 @@ def collect_devices(device: str | None = None) -> dict:
 def display_devices(devices_states, console):
     for section, data in devices_states.items():
         collector = DEVICES_COLLECTOR[section]
-        collector.render_full(data, console)
+        collector.display_dashboard(collector, data, console)
 
 
 class KdevviewCommands:

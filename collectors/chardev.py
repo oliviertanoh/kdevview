@@ -1,12 +1,15 @@
-from .common.devices_type_dict import CHAR_DEVICE_TYPE
-from .common.utils import read_sysfs
+from .common.devices_type_dict import CHAR_DEVICE_TYPE, DEVICES, DEVICES_COLLECTORS
+from .common.utils import read_sysfs, chunk_list
+from .collector import Collector
 
 from rich.table import Table
+from rich.panel import Panel
+from rich.layout import Layout
 from rich.columns import Columns
 from rich import box
 
 
-class CharacterDevice:
+class CharacterDevice (Collector):
 
     def __init__(self):
         pass
@@ -62,34 +65,23 @@ class CharacterDevice:
         return {"CHARACTER DEVICES": character_devices,
                 "BLOCK DEVICES": block_devices}
 
-    @staticmethod
-    def chunk_list(items, n_chunks):
-        k, r = divmod(len(items), n_chunks)
-        chunks = []
-        start = 0
-        for i in range(n_chunks):
-            # les r premières tranches ont un élément de plus
-            size = k + (1 if i < r else 0)
-            chunks.append(items[start:start + size])
-            start += size
-        return chunks
+    def render_full(self, section, data):
+        chunks = chunk_list(data, n_chunks=3)
+        table = Table(box=box.SIMPLE_HEAVY, show_header=True)
 
-    @staticmethod
-    def make_table(rows):
-        table = Table(box=box.SIMPLE_HEAVY, show_lines=False, show_header=True)
-        table.add_column(style="cyan bold", justify="right")
-        table.add_column(style="white")
-        for major, name in rows:
-            table.add_row(major, name)
+        for _ in range(3):
+            table.add_column("Major", justify="right", style="cyan")
+            table.add_column("Name")
+
+        max_len = max(len(chunk) for chunk in chunks) if chunks else 0
+        for row_idx in range(max_len):
+            row_data = []
+            for chunk in chunks:
+                if row_idx < len(chunk):
+                    major, name = chunk[row_idx]
+                    row_data.extend([major, name])
+                else:
+                    row_data.extend(["", ""])
+            table.add_row(*row_data)
+
         return table
-
-    @staticmethod
-    def display_in_columns(devices, console, n_columns=3):
-        chunks = CharacterDevice.chunk_list(devices, n_columns)
-        tables = [CharacterDevice.make_table(chunk) for chunk in chunks]
-        console.print(Columns(tables))
-
-    def render_full(self, devices, console):
-        for device_type, device in devices.items():
-            console.print(f"[bold]{device_type}[/bold]")
-            CharacterDevice.display_in_columns(device, console, n_columns=5)
