@@ -12,7 +12,7 @@ class I2CDevice (Collector):
     """Collects and displays I2C devices from /sys/bus/i2c/devices."""
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def collect(self) -> dict:
         """Collect I2C devices and their properties."""
@@ -48,7 +48,8 @@ class I2CDevice (Collector):
         """Create a table displaying I2C devices in n columns."""
         if colone == 0:
             table = Table(box=box.SIMPLE_HEAD, show_header=True)
-            table.add_column("Device", style="cyan bold", justify="right", overflow="fold")
+            table.add_column("Device", style="cyan bold",
+                             justify="right", overflow="fold")
             table.add_column("Name", style="white", overflow="fold")
             table.add_column("State", style="white", overflow="fold")
             table.add_column("Class", style="white", overflow="fold")

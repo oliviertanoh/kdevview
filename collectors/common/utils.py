@@ -25,4 +25,4 @@ def read_sysfs(filename: str) -> list[str]:
             return content
     except OSError as err:
         # logging.warning("could not read %s: %s", filename, err)
-        return []
+        return ['']

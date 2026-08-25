@@ -5,6 +5,7 @@ from rich.console import Console
 from collectors.chardev import CharacterDevice
 from collectors.modules import Modules
 from collectors.i2c import I2CDevice
+from collectors.usb import UsbDevices
 from collectors.common.devices_type_dict import DEVICES, CURRENT_VERSION
 
 console = Console()
@@ -12,7 +13,8 @@ console = Console()
 DEVICES_COLLECTOR = {
     "chardev": CharacterDevice(),
     "modules": Modules(),
-    "i2c": I2CDevice()
+    "i2c": I2CDevice(),
+    "usb": UsbDevices()
 }
 
 
