@@ -79,7 +79,7 @@ aggregate state); use `--only <section>` to watch one section in full detail.
 
 ## Platform support
 
-`kdevview` detects whether it runs on a device-tree system (embedded ARM) or a
+`kdevview` will detects whether it runs on a device-tree system (embedded ARM) or a
 regular x86 machine, and adapts accordingly. Bus sections (I2C/SPI/GPIO) are most
 relevant on embedded boards and are often empty on a desktop, that is expected.
 
