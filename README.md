@@ -8,13 +8,6 @@ colorized view in your terminal. It works on both x86 desktops and ARM embedded
 boards (tested on Raspberry Pi CM4), adapting what it shows to the platform it
 runs on.
 
-## Why
-Inspecting the device state of a Linux system usually means running several
-different commands, each with its own format, and mentally cross-referencing
-their output. `kdevview` does that cross-referencing for you: for example, it
-maps each `/dev` node to the driver that handles it, and each I2C device to the
-bus and driver it belongs to.
-
 It is **read-only**: it never modifies any device or writes anywhere. It only
 reads and displays.
 
@@ -50,16 +43,6 @@ cd kdevview
 pip install -r requirements.txt
 ```
 
-## Usage
-
-```
-sudo ./kdevview.py                 # full snapshot, rich output
-sudo ./kdevview.py --watch         # live dashboard (summaries)
-sudo ./kdevview.py --only chardev      # snapshot of the chardev section only
-sudo ./kdevview.py --only gpio --watch   # watch GPIO in detail, live
-sudo ./kdevview.py --json          # machine-readable snapshot
-```
-
 ### Options
 
 <!-- Keep this table in sync with the actual argparse definition. -->
@@ -67,7 +50,7 @@ sudo ./kdevview.py --json          # machine-readable snapshot
 | Option | Effect |
 |--------|--------|
 | *(none)* | Full snapshot, rich output |
-| `--watch` | Live mode, refreshes in place |
+| `--watch (not implemented)` | Live mode, refreshes in place |
 | `--only <section>` | Restrict to one section: `chardev`, `modules`, `i2c`, `spi`, `gpio`, `classes`, `kmsg` |
 | `--interval <N>` | Refresh interval in seconds for `--watch` |
 | `--json` | Machine-readable snapshot (cannot be combined with `--watch`) |
