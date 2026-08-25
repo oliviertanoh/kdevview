@@ -11,6 +11,11 @@ runs on.
 It is **read-only**: it never modifies any device or writes anywhere. It only
 reads and displays.
 
+<img width="1073" height="428" alt="image" src="https://github.com/user-attachments/assets/ad5633a1-81e6-4c12-871e-b951c7729f01" />
+
+
+<img width="1335" height="339" alt="image" src="https://github.com/user-attachments/assets/07ad6c28-076e-4e16-b405-660e46f3090c" />
+
 ## Features
 
 - **Character & block devices** :  major/minor numbers and the driver behind each `/dev` node
