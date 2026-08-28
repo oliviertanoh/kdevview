@@ -1,5 +1,6 @@
 import argparse
 import json
+import time
 
 from rich.console import Console
 from collectors.chardev import CharacterDevice
@@ -77,10 +78,49 @@ class KdevviewCommands:
         print(json.dumps(get_devices_state, indent=2))
 
     def run_watch(self):
-        pass
+
+        last_devices_dict = {}
+        last_devices_dict_hashed = []
+
+        new_device_list = {}
+        new_devices_dict_hashed = []
+
+        last_device_state = collect_devices(
+            self.args.only)
+
+        if not self.args.only:
+            for device in DEVICES:
+                DEVICES_COLLECTOR[device].convert_dict_to_set(
+                    last_device_state)
+        else:
+            last_devices_dict_hashed = DEVICES_COLLECTOR[self.args.only].convert_dict_to_set(
+                last_device_state)
+
+        while (True):
+
+            new_device_state = collect_devices(
+                self.args.only)
+
+            if not self.args.only:
+                for device in DEVICES:
+                    DEVICES_COLLECTOR[device].convert_dict_to_set(
+                        new_device_state)
+            else:
+                new_devices_dict_hashed = DEVICES_COLLECTOR[self.args.only].convert_dict_to_set(
+                    new_device_state)
+
+            is_new_devcie = list(set(new_devices_dict_hashed) -
+                                 set(last_devices_dict_hashed))
+
+            if is_new_devcie:
+                print(is_new_devcie)
+                last_devices_dict_hashed = new_devices_dict_hashed
+
+            time.sleep(self.args.interval)
 
     def run_snapshot(self):
         get_devices_state = collect_devices(self.args.only)
+        print(get_devices_state)
         display_devices(get_devices_state, console, self.args.colone)
 
 
