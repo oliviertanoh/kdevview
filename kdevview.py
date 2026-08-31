@@ -2,7 +2,9 @@ import argparse
 import json
 import time
 
-from rich.console import Console
+from rich.console import Console, Group
+from rich.live import Live
+from rich.rule import Rule
 from collectors.chardev import CharacterDevice
 from collectors.modules import Modules
 from collectors.i2c import I2CDevice
@@ -44,6 +46,8 @@ class KdevviewCommands:
 
     def __init__(self):
 
+        self.start_time = time.time()
+
         parser = argparse.ArgumentParser(prog="kdevview")
 
         parser.add_argument("-o", "--only", choices=DEVICES,
@@ -77,50 +81,84 @@ class KdevviewCommands:
         get_devices_state = collect_devices(self.args.only)
         print(json.dumps(get_devices_state, indent=2))
 
+    def get_renderable(self, last_device_state, new_device_timestamps, removed_device_timestamps):
+        if not self.args.only:
+            renderables = []
+            for section in DEVICES:
+                collector = DEVICES_COLLECTOR[section]
+                if section in last_device_state:
+                    data = last_device_state[section]
+                    for title, device_data in data.items():
+                        renderables.append(Rule(title, style="cyan"))
+                        renderable = collector.render_full(
+                            device_data, self.args.colone, new_device_timestamps, removed_device_timestamps)
+                        renderables.append(renderable)
+            return Group(*renderables) if renderables else console.print("")
+        else:
+            collector = DEVICES_COLLECTOR[self.args.only]
+            data = last_device_state[self.args.only]
+            title = list(data.keys())[0]
+            device_data = data[title]
+            renderable = collector.render_full(
+                device_data, self.args.colone, new_device_timestamps, removed_device_timestamps)
+            return Group(Rule(title, style="cyan"), renderable)
+
+    def _clean_timestamps(self, timestamps: dict, current_time: float, timeout: float = 5) -> None:
+        to_remove = [d for d, t in timestamps.items() if current_time - t > timeout]
+        for device in to_remove:
+            del timestamps[device]
+
     def run_watch(self):
+        console.print("[yellow]Press 'Ctrl + c' to quit[/yellow]\n")
 
-        last_devices_dict = {}
-        last_devices_dict_hashed = []
+        new_device_timestamps = {}
+        removed_device_timestamps = {}
 
-        new_device_list = {}
-        new_devices_dict_hashed = []
-
-        last_device_state = collect_devices(
-            self.args.only)
+        last_device_state_dict = collect_devices(self.args.only)
+        last_device_state_list = set(last_device_state_dict["usb"]["USB DEVICES"])
 
         if not self.args.only:
             for device in DEVICES:
-                DEVICES_COLLECTOR[device].convert_dict_to_set(
-                    last_device_state)
-        else:
-            last_devices_dict_hashed = DEVICES_COLLECTOR[self.args.only].convert_dict_to_set(
-                last_device_state)
+                DEVICES_COLLECTOR[device].convert_dict_to_set(last_device_state_dict)
 
-        while (True):
+        try:
+            with Live(console=console) as live:
+                while True:
+                    new_device_state_dict = collect_devices(self.args.only)
+                    new_devices_state_list = set(new_device_state_dict["usb"]["USB DEVICES"])
 
-            new_device_state = collect_devices(
-                self.args.only)
+                    new_device = new_devices_state_list - last_device_state_list
+                    removed_device = last_device_state_list - new_devices_state_list
+                    current_time = time.time()
 
-            if not self.args.only:
-                for device in DEVICES:
-                    DEVICES_COLLECTOR[device].convert_dict_to_set(
-                        new_device_state)
-            else:
-                new_devices_dict_hashed = DEVICES_COLLECTOR[self.args.only].convert_dict_to_set(
-                    new_device_state)
+                    for device in new_device:
+                        new_device_timestamps[device] = current_time
+                    for device in removed_device:
+                        removed_device_timestamps[device] = current_time
 
-            is_new_devcie = list(set(new_devices_dict_hashed) -
-                                 set(last_devices_dict_hashed))
+                    self._clean_timestamps(new_device_timestamps, current_time)
+                    self._clean_timestamps(removed_device_timestamps, current_time)
 
-            if is_new_devcie:
-                print(is_new_devcie)
-                last_devices_dict_hashed = new_devices_dict_hashed
+                    if not self.args.only:
+                        for device in DEVICES:
+                            DEVICES_COLLECTOR[device].convert_dict_to_set(new_device_state_dict)
 
-            time.sleep(self.args.interval)
+                    last_device_state_dict = new_device_state_dict
+                    last_device_state_list = new_devices_state_list
+
+                    live.update(self.get_renderable(
+                        last_device_state_dict, new_device_timestamps, removed_device_timestamps))
+
+                    time.sleep(self.args.interval)
+
+        except KeyboardInterrupt:
+            elapsed = time.time() - self.start_time
+            minutes, seconds = divmod(elapsed, 60)
+            console.print(
+                f"\n[yellow]Stopped after {int(minutes)}m {int(seconds)}s ({elapsed:.3f}s)[/yellow]\n")
 
     def run_snapshot(self):
         get_devices_state = collect_devices(self.args.only)
-        print(get_devices_state)
         display_devices(get_devices_state, console, self.args.colone)
 
 
