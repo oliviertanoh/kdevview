@@ -6,6 +6,8 @@ class Collector:
     """Base class for device collectors."""
 
     def __init__(self):
+        self.panel = None
+        self.consol = None
         pass
 
     @abstractmethod
@@ -24,3 +26,8 @@ class Collector:
             renderable = collector.render_full(data, colone)
             panel = Panel(renderable, title=section, border_style="cyan")
             console.print(panel)
+
+    def update_data(self, collector, devices_states, data, colone):
+
+        for section, data in devices_states.items():
+            renderable = collector.render_full(data, colone)
