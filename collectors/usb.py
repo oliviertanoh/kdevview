@@ -13,7 +13,7 @@ import time
 class UsbDevices(Collector):
 
     def __init__(self):
-
+        super().__init__()
         self.usb_device_data = []
         self.table = Table(box=box.SIMPLE_HEAD, show_header=True)
 
@@ -92,11 +92,13 @@ class UsbDevices(Collector):
             for bus, id, name, vendor, manufacturer in data:
                 device_tuple = (bus, id, name, vendor, manufacturer)
                 style = "green bold" if device_tuple in new_device_timestamps else ""
-                self.table.add_row(bus, id, name, vendor, manufacturer, style=style)
+                self.table.add_row(bus, id, name, vendor,
+                                   manufacturer, style=style)
 
             for device_tuple in removed_device_timestamps:
                 bus, id, name, vendor, manufacturer = device_tuple
-                self.table.add_row(bus, id, name, vendor, manufacturer, style="red bold")
+                self.table.add_row(bus, id, name, vendor,
+                                   manufacturer, style="red bold")
 
             return self.table
 

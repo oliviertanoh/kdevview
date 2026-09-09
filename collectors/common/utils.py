@@ -1,5 +1,6 @@
 import logging
 from pathlib import Path
+from devices_type_dict import ARCHITECETURE
 
 
 def chunk_list(items, n_chunks):
@@ -26,3 +27,16 @@ def read_sysfs(filename: str) -> list[str]:
     except OSError as err:
         # logging.warning("could not read %s: %s", filename, err)
         return ['']
+
+
+def match_device_path_by_arch(arch: str) -> str:
+
+    if arch not in ARCHITECETURE:
+        # Log have to be put here
+        return ''
+
+    match arch:
+        case "x86_64" | "x86_32":
+            return ARCHITECETURE["x86_64"][arch]
+        case "aarch64" | "aarch32":
+            return ARCHITECETURE["x86_64"][arch]

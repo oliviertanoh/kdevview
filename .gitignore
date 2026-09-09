@@ -1,6 +1,9 @@
 # My files
 notes.md
 
+# My folders
+.vscode/*
+
 
 # Byte-compiled / optimized / DLL files
 __pycache__/

@@ -11,7 +11,7 @@ class Modules (Collector):
     """Collects and displays kernel modules from /proc/modules."""
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def parse_device_line(self, line) -> list:
         """Parse a module line into components."""
@@ -35,7 +35,8 @@ class Modules (Collector):
         """Create a table displaying modules in n columns."""
         if colone == 0:
             table = Table(box=box.SIMPLE_HEAD, show_header=True)
-            table.add_column("Module", style="cyan bold", justify="right", overflow="fold")
+            table.add_column("Module", style="cyan bold",
+                             justify="right", overflow="fold")
             table.add_column("Size", style="white", overflow="fold")
             table.add_column("Used", style="white")
             table.add_column("By", style="white", overflow="fold")

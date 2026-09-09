@@ -9,3 +9,15 @@ DEVICES_COLLECTORS = {"CHARACTER DEVICES": "chardev",
                       "MODULES": "modules",
                       "I2C DEVICES": "i2c",
                       "USB DEIVES": "usb"}
+
+ARCHITECETURE = {
+    "x86_64": {
+        "usb": "/sys/bus/usb/devices/",
+        "i2c": "/sys/bus/i2c/devices/",
+        "modules": "/proc/modules",
+        "chardev": "/proc/devices"
+    }
+
+}
+
+# ARCHITECETURE = ["x86_64", "x86_32", "aarch64", "aarch32"]

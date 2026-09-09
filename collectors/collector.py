@@ -1,3 +1,4 @@
+import platform
 from rich.panel import Panel
 from abc import ABC, abstractmethod
 
@@ -8,6 +9,7 @@ class Collector:
     def __init__(self):
         self.panel = None
         self.consol = None
+        self.architecture = platform.machine()
         pass
 
     @abstractmethod

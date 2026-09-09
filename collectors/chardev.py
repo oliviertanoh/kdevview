@@ -13,7 +13,7 @@ class CharacterDevice (Collector):
     """Collects and displays character and block devices from /proc/devices."""
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def parse_device_line(self, line) -> list:
         """Parse a device line into tokens."""
