@@ -9,7 +9,7 @@ from collectors.chardev import CharacterDevice
 from collectors.modules import Modules
 from collectors.i2c import I2CDevice
 from collectors.usb import UsbDevices
-from collectors.common.devices_type_dict import DEVICES, CURRENT_VERSION
+from collectors.common.devices_type_dict import DEVICES, CURRENT_VERSION, DEVICES_DICT_MATCH
 
 console = Console()
 
@@ -104,7 +104,8 @@ class KdevviewCommands:
             return Group(Rule(title, style="cyan"), renderable)
 
     def _clean_timestamps(self, timestamps: dict, current_time: float, timeout: float = 5) -> None:
-        to_remove = [d for d, t in timestamps.items() if current_time - t > timeout]
+        to_remove = [d for d, t in timestamps.items()
+                     if current_time - t > timeout]
         for device in to_remove:
             del timestamps[device]
 
@@ -115,17 +116,20 @@ class KdevviewCommands:
         removed_device_timestamps = {}
 
         last_device_state_dict = collect_devices(self.args.only)
-        last_device_state_list = set(last_device_state_dict["usb"]["USB DEVICES"])
+        last_device_state_list = set(
+            last_device_state_dict[self.args.only][DEVICES_DICT_MATCH[self.args.only]])
 
         if not self.args.only:
             for device in DEVICES:
-                DEVICES_COLLECTOR[device].convert_dict_to_set(last_device_state_dict)
+                DEVICES_COLLECTOR[device].convert_dict_to_set(
+                    last_device_state_dict)
 
         try:
             with Live(console=console) as live:
                 while True:
                     new_device_state_dict = collect_devices(self.args.only)
-                    new_devices_state_list = set(new_device_state_dict["usb"]["USB DEVICES"])
+                    new_devices_state_list = set(
+                        new_device_state_dict[self.args.only][DEVICES_DICT_MATCH[self.args.only]])
 
                     new_device = new_devices_state_list - last_device_state_list
                     removed_device = last_device_state_list - new_devices_state_list
@@ -137,11 +141,13 @@ class KdevviewCommands:
                         removed_device_timestamps[device] = current_time
 
                     self._clean_timestamps(new_device_timestamps, current_time)
-                    self._clean_timestamps(removed_device_timestamps, current_time)
+                    self._clean_timestamps(
+                        removed_device_timestamps, current_time)
 
                     if not self.args.only:
                         for device in DEVICES:
-                            DEVICES_COLLECTOR[device].convert_dict_to_set(new_device_state_dict)
+                            DEVICES_COLLECTOR[device].convert_dict_to_set(
+                                new_device_state_dict)
 
                     last_device_state_dict = new_device_state_dict
                     last_device_state_list = new_devices_state_list

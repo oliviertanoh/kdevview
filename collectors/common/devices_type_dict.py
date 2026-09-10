@@ -4,20 +4,20 @@ CHAR_DEVICE_TYPE = ["Character devices:", "Block devices:"]
 
 DEVICES = ["chardev", "modules", "i2c", "usb"]
 
-DEVICES_COLLECTORS = {"CHARACTER DEVICES": "chardev",
-                      "BLOCK DEVICES": "chardev",
-                      "MODULES": "modules",
-                      "I2C DEVICES": "i2c",
-                      "USB DEIVES": "usb"}
+DEVICES_DICT_MATCH = {"chardev": "CHARACTER DEVICES",
+                      "blockdev": "BLOCK DEVICES",
+                      "modules": "MODULES",
+                      "i2c": "I2C DEVICES",
+                      "usb": "USB DEVICES"}
 
-ARCHITECETURE = {
-    "x86_64": {
-        "usb": "/sys/bus/usb/devices/",
-        "i2c": "/sys/bus/i2c/devices/",
-        "modules": "/proc/modules",
-        "chardev": "/proc/devices"
-    }
-
+sys_paths = {
+    "usb": "/sys/bus/usb/devices/",
+    "i2c": "/sys/bus/i2c/devices/",
+    "modules": "/proc/modules",
+    "chardev": "/proc/devices",
 }
 
-# ARCHITECETURE = ["x86_64", "x86_32", "aarch64", "aarch32"]
+ARCHITECETURE = {
+    "x86_64": sys_paths,
+    "x86_32": sys_paths,
+}

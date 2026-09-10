@@ -1,6 +1,7 @@
 from .common.utils import read_sysfs, chunk_list
 from .chardev import CharacterDevice
 from .collector import Collector
+from .common.utils import match_device_path_by_arch
 
 from rich.table import Table
 from rich.columns import Columns
@@ -23,8 +24,9 @@ class Modules (Collector):
     def collect(self) -> dict:
         """Collect kernel modules from /proc/modules."""
         modules = []
-
-        modules_loaded = read_sysfs("/proc/modules")
+        module_path = match_device_path_by_arch(
+            self.architecture, "modules")
+        modules_loaded = read_sysfs(module_path)
 
         for module in modules_loaded:
             modules.append(self.parse_device_line(module))

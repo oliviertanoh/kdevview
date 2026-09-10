@@ -1,5 +1,6 @@
 from .common.utils import read_sysfs, chunk_list
 from .collector import Collector
+from .common.utils import match_device_path_by_arch
 
 from rich.live import Live
 from rich.table import Table
@@ -22,7 +23,7 @@ class UsbDevices(Collector):
 
         self.usb_device_data = []
 
-        list_devices_path = "/sys/bus/usb/devices/"
+        list_devices_path = match_device_path_by_arch(self.architecture, "usb")
 
         list_driver = [f for f in os.listdir(list_devices_path)
                        if os.path.isdir(os.path.join(list_devices_path, f))]

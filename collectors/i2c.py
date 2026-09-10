@@ -1,5 +1,6 @@
 from .common.utils import read_sysfs, chunk_list
 from .collector import Collector
+from .common.utils import match_device_path_by_arch
 
 from rich.table import Table
 from rich.panel import Panel
@@ -17,7 +18,7 @@ class I2CDevice (Collector):
     def collect(self) -> dict:
         """Collect I2C devices and their properties."""
         i2c_devices = []
-        list_device_path = "/sys/bus/i2c/devices/"
+        list_device_path = match_device_path_by_arch(self.architecture, "i2c")
 
         try:
             list_driver = [f for f in os.listdir(list_device_path)
