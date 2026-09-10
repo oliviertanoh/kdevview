@@ -1,5 +1,6 @@
 from .common.utils import read_sysfs, chunk_list
 from .collector import Collector
+from .common.utils import match_device_path_by_arch
 
 from rich.live import Live
 from rich.table import Table
@@ -13,7 +14,7 @@ import time
 class UsbDevices(Collector):
 
     def __init__(self):
-
+        super().__init__()
         self.usb_device_data = []
         self.table = Table(box=box.SIMPLE_HEAD, show_header=True)
 
@@ -22,7 +23,7 @@ class UsbDevices(Collector):
 
         self.usb_device_data = []
 
-        list_devices_path = "/sys/bus/usb/devices/"
+        list_devices_path = match_device_path_by_arch(self.architecture, "usb")
 
         list_driver = [f for f in os.listdir(list_devices_path)
                        if os.path.isdir(os.path.join(list_devices_path, f))]
@@ -92,11 +93,13 @@ class UsbDevices(Collector):
             for bus, id, name, vendor, manufacturer in data:
                 device_tuple = (bus, id, name, vendor, manufacturer)
                 style = "green bold" if device_tuple in new_device_timestamps else ""
-                self.table.add_row(bus, id, name, vendor, manufacturer, style=style)
+                self.table.add_row(bus, id, name, vendor,
+                                   manufacturer, style=style)
 
             for device_tuple in removed_device_timestamps:
                 bus, id, name, vendor, manufacturer = device_tuple
-                self.table.add_row(bus, id, name, vendor, manufacturer, style="red bold")
+                self.table.add_row(bus, id, name, vendor,
+                                   manufacturer, style="red bold")
 
             return self.table
 

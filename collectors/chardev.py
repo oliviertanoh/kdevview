@@ -1,6 +1,7 @@
-from .common.devices_type_dict import CHAR_DEVICE_TYPE, DEVICES, DEVICES_COLLECTORS
+from .common.devices_type_dict import CHAR_DEVICE_TYPE
 from .common.utils import read_sysfs, chunk_list
 from .collector import Collector
+from .common.utils import match_device_path_by_arch
 
 from rich.table import Table
 from rich.panel import Panel
@@ -13,7 +14,7 @@ class CharacterDevice (Collector):
     """Collects and displays character and block devices from /proc/devices."""
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def parse_device_line(self, line) -> list:
         """Parse a device line into tokens."""
@@ -46,7 +47,9 @@ class CharacterDevice (Collector):
 
         is_device_char = False
         current_device_type = None
-        device_content = read_sysfs("/proc/devices")
+        chardev_path = match_device_path_by_arch(
+            self.architecture, "chardev")
+        device_content = read_sysfs(chardev_path)
 
         for device in device_content:
 

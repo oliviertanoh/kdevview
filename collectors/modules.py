@@ -1,6 +1,7 @@
 from .common.utils import read_sysfs, chunk_list
 from .chardev import CharacterDevice
 from .collector import Collector
+from .common.utils import match_device_path_by_arch
 
 from rich.table import Table
 from rich.columns import Columns
@@ -11,7 +12,7 @@ class Modules (Collector):
     """Collects and displays kernel modules from /proc/modules."""
 
     def __init__(self):
-        pass
+        super().__init__()
 
     def parse_device_line(self, line) -> list:
         """Parse a module line into components."""
@@ -23,8 +24,9 @@ class Modules (Collector):
     def collect(self) -> dict:
         """Collect kernel modules from /proc/modules."""
         modules = []
-
-        modules_loaded = read_sysfs("/proc/modules")
+        module_path = match_device_path_by_arch(
+            self.architecture, "modules")
+        modules_loaded = read_sysfs(module_path)
 
         for module in modules_loaded:
             modules.append(self.parse_device_line(module))
@@ -35,7 +37,8 @@ class Modules (Collector):
         """Create a table displaying modules in n columns."""
         if colone == 0:
             table = Table(box=box.SIMPLE_HEAD, show_header=True)
-            table.add_column("Module", style="cyan bold", justify="right", overflow="fold")
+            table.add_column("Module", style="cyan bold",
+                             justify="right", overflow="fold")
             table.add_column("Size", style="white", overflow="fold")
             table.add_column("Used", style="white")
             table.add_column("By", style="white", overflow="fold")
